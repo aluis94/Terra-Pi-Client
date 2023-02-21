@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+{% if name %}
+
+
+{% else %}
+
+
+{% endif %}
+<div class="container">
+    <h2>Add Sensor</h2>
+    <button type="button" class="btn">Add</button>   
+  </div>
+<div class="container">
+    <h2>Sensors</h2>
+    <p>Configured sensors</p>            
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Sensor Name</th>
+          <th>Type</th>
+          <th>Pins</th>
+          <th>Edit</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>TH1</td>
+          <td>Temp_Hum</td>
+          <td>3</td>
+          <td> <button type="button" class="btn">Add</button> </td>
+        </tr>
+        <tr>
+            <td>Light1</td>
+            <td>Light</td>
+            <td>1</td>
+            <td> <button type="button" class="btn">Add</button> </td>
+        </tr>
+        <tr>
+            <td>Motion1</td>
+            <td>Motion</td>
+            <td>2</td>
+            <td> <button type="button" class="btn">Add</button> </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  
+
+{% endblock %}
