@@ -3,37 +3,71 @@
 {% block page_content %}
 
 <div class="container">
-    <h2>Add Device</h2>
-    <button type="button" class="btn">Add</button>   
+  <h2>Add Device </h2>
+  <a href="/terra-pi/device/new"><button type="button" class="btn">Add</button> </a>
+ 
+      
   </div>
 <div class="container">
-    <h2>Devices</h2>
-    <p>Configured devices</p>            
+  <h2>Devices</h2>
+    <p>Configured devices</p> 
+    {% if devices|length > 0%}           
     <table class="table table-hover">
       <thead>
         <tr>
           <th>Device Name</th>
           <th>Type</th>
-          <th>Pin Number</th>
-          <th>Edit</th>
+          <th>Category</th>
+          <th>Pin1</th>
+          <th>Pin2</th>
+          <th>Pin3</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>
-        <tr>
-          <td>Water pump1</td>
-          <td>water_pump</td>
-          <td>33</td>
-          <td> <button type="button" class="btn">Add</button> </td>
-        </tr>
-        <tr>
-            <td>Heater 1</td>
-            <td>heater</td>
-            <td>24</td>
-            <td> <button type="button" class="btn">Add</button> </td>
-        </tr>
         
+        {% for device in devices %}
+        <tr>
+          <td>{{ device.Name }}</td>
+          <td>{{ device.Type }}</td>
+          <td>{{ device.Category }}</td>
+          <td>{{ device.Pin1 }}</td>
+          <td>{{ device.Pin2 }}</td>
+          <td>{{ device.Pin3 }}</td>
+          {% if device.Category == Sensor %}
+          <td> <a href="/terra-pi/sensor/{{device.ID}}"> <button type="button" class="btn">Edit</button></a> </td>
+          {% else %}
+          <td> <a href="/terra-pi/device/{{device.ID}}"> <button type="button" class="btn">Edit</button></a> </td> 
+          {% endif %}
+        </tr>
+        {% endfor %}  
       </tbody>
     </table>
+
+    <h2>Notification Devices</h2>
+    <p>Configured notification devices</p>
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th>Device Name</th>
+          <th>Type</th>
+          
+          
+      </thead>
+      <tbody> 
+        {% for notification in notifications %}
+        <tr>
+          <td>{{ notification.Name }}</td>
+          <td>{{ notification.Type }}</td>
+          
+          
+        </tr>
+        {% endfor %}</tbody>
+    </table>
+
+    {% else %}
+    <h2>No Devices</h2>
+    {%endif%}
   </div>
 
 {% endblock %}

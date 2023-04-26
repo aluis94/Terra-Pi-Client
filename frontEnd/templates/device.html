@@ -5,9 +5,9 @@
 {% block page_content %}
 <div class="container">
   {% if not device %}
-  <h2>New Sensor</h2>
+  <h2>New Device</h2>
   {% else %}
-  <h2>Edit Sensor</h2>
+  <h2>Edit Device</h2>
   {% endif %}
 </div>
 
@@ -21,19 +21,11 @@
         </div>
       </div>
 
-      <div class="input-group mb-3">
-        <div class="input-group-prepend">
-          <label class="input-group-text" for="type">Type</label>
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="type">Type:</label>
+        <div class="col-sm-10">
+          <input  class="form-control" id="type" {% if device.Type %} value="{{device.Type}}" {% else %}  placeholder="Device Type"{% endif%}>
         </div>
-        <select class="custom-select" id="type">
-          {% if not device.Type %}
-          {% else %}
-          <option value="{{device.Type}}">{{device.Type}}</option>
-          {% endif %}
-          <option value="Temp_Hum">Temp_Hum</option>
-          <option value="Motion">Motion</option>
-          <option value="Light">Light</option>
-        </select>
       </div>
 
       <!--GPIO PIN 1-->
@@ -50,6 +42,10 @@
           {% for GPIO in GPIOs %}
           <option value="{{GPIO}}">GPIO {{GPIO}}</option>
           {% endfor %}
+          
+          
+          
+          
         </select>
       </div>
       <!--GPIO PIN 2-->
@@ -91,9 +87,7 @@
         {% else %}
         <button id="edit"class="btn ">Edit</button>
         {% endif %}
-
-
-        {% if device.ID  %}
+        {% if device.ID %}
         <button id="delete"class="btn ">Delete</button>
         {% endif %}
       </div>
@@ -114,7 +108,7 @@
         "Pin2": 0,
         "Pin3": 0,
         "Type": "Heater",
-        "Category": "Sensor"
+        "Category": "Device"
     }}
       $(document).ready(function(){
         
@@ -170,7 +164,7 @@
           }
           if(canSubmit==true){
             
-           
+            
             $.ajax({
                 type: 'POST',
                 url: 'http://127.0.0.1:8080/device/add',
@@ -178,7 +172,7 @@
                 data: JSON.stringify(data), // access in body
             }).done(function () {
                 console.log('SUCCESS');
-                window.location.href = "/terra-pi/sensors/"
+                window.location.href = "/terra-pi/devices/"
             }).fail(function (msg) {
                 console.log('FAIL');
             }).always(function (msg) {
@@ -221,7 +215,7 @@
                 data: JSON.stringify(data), // access in body
             }).done(function () {
                 console.log('SUCCESS');
-                window.location.href = "/terra-pi/sensors/";
+                window.location.href = "/terra-pi/devices/";
             }).fail(function (msg) {
                 console.log('FAIL');
             }).always(function (msg) {

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block page_content %}
+
+<div class="container">
+    <h2>Add Job </h2>
+    <a href="/terra-pi/job/new/simple"><button type="button" class="btn">Add Simple Job</button> </a>
+    <a href="/terra-pi/job/new/multi"><button type="button" class="btn">Add Multi Step Job</button> </a>
+      
+  </div>
+<div class="container">
+ 
+  <h2>Jobs</h2>
+    <p>Configured Jobs</p> 
+  
+    {% if jobs|length > 0%}           
+    <table class="table table-hover ">
+      <thead>
+        <tr >
+          <th>Job Name</th>
+          <th>Job Description</th>
+          <th>Script Name</th>
+          <th>Instructions</th>
+          <th>Minute</th>
+          <th>Hour</th>
+          <th>Day of Month</th>
+          <th>Month</th>
+          <th>Day of week</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        
+        {% for job in jobs %}
+        <tr >
+          <td>{{ job.Name  }} test</td>
+          <td>{{ job.Description }}</td>
+          <td>{{ job.ScriptName }}</td>
+          <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;" >{{ job.VerbalInstr }}</td>
+          <td>{{ job.Minute }}</td>
+          <td>{{ job.Hour }}</td>
+          <td>{{ job.Day_Month }}</td>
+          <td>{{ job.Month }}</td>
+          <td>{{ job.Day_Week }}</td>
+         
+          <td> <a href="/terra-pi/job/simple/{{job.ID}}/"> <button type="button" class="btn">Edit</button></a> </td>
+          
+        </tr>
+        {% endfor %}
+        
+      </tbody>
+    </table>
+    {% else %}
+    <h3>No Jobs Configured</h3>
+    {%endif%}
+  </div>
+
+{% endblock %}
