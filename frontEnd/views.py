@@ -68,6 +68,7 @@ def jobs_page(request):
 
 def new_simple_job_page(request):
     #dostuff
+    
     return render(request, 'job_simple.html',{'job':''})
 
 def new_multi_job_page(request):
@@ -77,8 +78,8 @@ def new_multi_job_page(request):
 def edit_simple_job_page(request, id):
     #dostuff
     response = requests.get("http://127.0.0.1:8080/job/view/"+id)
-    jobs = response.json()
-    return render(request, 'job_simple.html',{'':''})
+    job = response.json()
+    return render(request, 'job_simple.html',{'job':job})
 
 def edit_multi_job_page(request, id):
     #dostuff

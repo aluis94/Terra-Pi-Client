@@ -17,22 +17,25 @@
       <div class="form-group">
         <label class="control-label col-sm-2" for="name">Job Name:</label>
         <div class="col-sm-10">
-          <input  class="form-control" id="name"{% if device.Name %} value="{{job.Name}}" {% else %}  placeholder="Job Name"{% endif%}>
+          <input  class="form-control" id="name"{% if job.Name %} value="{{job.Name}}" {% else %}  placeholder="Job Name"{% endif%}>
         </div>
       </div>
 
       <div class="form-group">
         <label class="control-label col-sm-2" for="description">Job Description:</label>
         <div class="col-sm-10">
-          <input  class="form-control" id="description"{% if device.Name %} value="{{job.Description}}" {% else %}  placeholder="Job Description"{% endif%}>
+          <input  class="form-control" id="description"{% if job.Name %} value="{{job.Description}}" {% else %}  placeholder="Job Description"{% endif%}>
         </div>
       </div>
 
       <div class="form-group">
         <label for="message">Message</label>
-        <textarea class="form-control" id="message" rows="3"></textarea>
+        <textarea class="form-control" id="message" rows="3">{% if job.Message%} {{job.Message}}{% endif %}</textarea>
       </div>
 
+      <!-- New Job only fields-->
+
+      {% if not job.Device_ID%}
       <div class="form-inline">
           <div class="input-group-prepend">
             <label class="input-group-text" for="category">Device Category</label>
@@ -99,6 +102,9 @@
         <input type="text" id="disabledPin3" class="form-control" placeholder="No input">
       </div>
     </fieldset>
+{% endif %}
+
+<!--End of new job only fields-->
 
       <h3>CRON</h3>
     <!--CRON fields-->
@@ -144,39 +150,45 @@
         <label class="input-group-text" for="cronExpMin">Minute</label>
       </div>
       <select class="custom-select" id="cronExpMin">
-        
+        <option> {{job.Minute}}</option>
       </select>
+      
+      
+
       <div class="input-group-prepend">
         <label class="input-group-text" for="cronExpHour">Hour</label>
       </div>
       <select class="custom-select" id="cronExpHour">
+        <option> {{job.Hour}}</option>
       </select>
       
       <div class="input-group-prepend" >
         <label class="input-group-text" for="cronExpDayMon">Day-Month </label>
       </div>
       <select class="custom-select" id="cronExpDayMon">
-        <options id="device-options"></options>
+        <option> {{job.Day_Month}}</option>
       </select>
       <div class="input-group-prepend" >
         <label class="input-group-text" for="cronExpMon">Month </label>
       </div>
       <select class="custom-select" id="cronExpMon">
-        <options id="device-options"></options>
+        <option> {{job.Month}}</option>
       </select>
       <div class="input-group-prepend" >
         <label class="input-group-text" for="cronExpDayWeek">Day-Week</label>
       </div>
       <select class="custom-select" id="cronExpDayWeek">
-        <options id="device-options"></options>
+        <option> {{job.Day_Week}}</option>
       </select>
       
 </div>
       
           
-
-
+      <!--Hidden fields-->
+      <!--Current device ID-->
       <input type="hidden" id="jobID" name="jobID" value="{{job.ID}}">
+      <input type="hidden" id="verbalInstrString" name="verbalInstr" value="{{job.VerbalInstr}}">
+
       <!--Buttons-->
       <div class="container">
         {% if not job %}
@@ -204,7 +216,7 @@
 	      "ScriptName":  "",
 	      "Name" : "TestEmail",
 	      "Description": "Send Test Email",
-	      "Device_ID"  : 1,
+	      "Device_ID"  : 0,
 	      "Duration"  : "",
 	      "DeviceOnOFF" :"",
 	
@@ -235,26 +247,67 @@
 
     /*Document ready function*/
       $(document).ready(function(){
-        populateCronExpressionFields()
+       
         /*variables*/
         var id = parseInt($("#jobID").val())
-        var name = ""
+        var name = $("#name").val()
         var description = $("#description").val();
         var category = $("#category").val();
         var mydevices;
         var mydeviceName = $("#currdevice").val();
-        var mydeviceID
+        var currdeviceID = $("#jobID").val();
+        var mydeviceID 
         var mydevice
         var isCheckCron = false
         var cronEvery = $("#cronEvery").val()
         var cronEveryVal=0
         var cronAtString =""
         var cronDayMonthString=""
+        var message = $("#message").val()
         
+        //get cron expr values
+        data.Job.Minute = $("#cronExpMin").val()
+        data.Job.Hour = $("#cronExpHour").val()
+        data.Job.Day_Month = $("#cronExpDayMon").val()
+        data.Job.Month = $("#cronExpMon").val()
+        data.Job.Day_Week = $("#cronExpDayWeek").val()
+        
+        //get verbal instr string
+        var verbalInstrString = $("#verbalInstrString").val()
+        
+        //if verbal instr exists
+        if (verbalInstrString !=="" && verbalInstrString !== null){
+          verbalInstr = JSON.parse(verbalInstrString)
+          VerbalInstr = verbalInstr
+          $("#cronCheck").prop('checked',true)
+
+          let evalue= getVerbalInstrVal(VerbalInstr)
+          let mevery = evalue.every
+          let mvalue = evalue.value
+          
+          console.log(mevery, mvalue)
+          updateCronVerbFields(mevery,mvalue)
+          verbalInstructionSet(mevery)
+          console.log(mevery)
+           $("#cronEvery").val(mevery)
+          //set Verbal Instr
+        }else{
+          console.log("no verbal instr")
+          updateCronVerbFields(cronEvery,0)
+        }
+        populateCronExpressionFields()
+      
 
         /*call java script functions here*/
-        getDevices(category)
-        updateCronVerbFields(cronEvery)
+        //if currdeviceID exists, call get request
+        if(currdeviceID!=0){
+          console.log("Edit job - get current device")
+        }else{
+          console.log("New job - get list of available devices")
+          getDevices(category)
+        }
+        
+        
         cronEveryVal = parseInt($("#cronEveryValue").val())
         console.log("Every val steart doc: "+cronEveryVal)
 
@@ -305,7 +358,7 @@
           cronEvery  = $(this).val()
           
           
-          updateCronVerbFields(cronEvery)
+          updateCronVerbFields(cronEvery,0)
           
           
           $("#cronAt").val("")
@@ -511,10 +564,8 @@
           canSubmit = true
           data.Job.ID = parseInt(id)
           data.Job.Name = name
-          data.Job.Type = type
-          data.Job.Pin1 = parseInt(pin1)
-          data.Job.Pin2 = parseInt(pin2)
-          data.Job.Pin3 = parseInt(pin3)
+          data.Job.Description = description
+          data.Job.Message = message
           
           if(name===""){
             canSubmit= false
@@ -529,7 +580,8 @@
             
           }
           if(canSubmit==true){
-            alert("Can submit")
+            alert("Can edit")
+            console.log(data.Job)
              /*
               alert("PUT button clicked: "+ data.Device.Pin1)
             $.ajax({
@@ -547,7 +599,7 @@
             });*/
           } 
           else{
-            alert("No Submit")
+            alert("No edit")
           }
           
           
@@ -559,7 +611,7 @@
           }else{
           $.ajax({
                 type: 'DELETE',
-                url: 'http://127.0.0.1:8080/device/delete/{{device.ID}}',
+                url: 'http://127.0.0.1:8080/job/delete/{{device.ID}}',
                 contentType: 'application/json',
                 
             }).done(function () {
@@ -574,6 +626,7 @@
         });
 
         /*javascript functions*/
+        //make sure that this can handle no devices in DB
         function getDevices(category){
         $.ajax({
                 type: 'GET',
@@ -582,7 +635,7 @@
                   devices = JSON.parse(res)
                   mydevices =  devices
                   $("#currdevice").empty();
-                  devices.forEach(function(device, index){
+                  mydevices.forEach(function(device, index){
                     if (index==0){
                     mydeviceID = device.ID
                     console.log(mydeviceID)
@@ -626,8 +679,42 @@
 
       function populateCronExpressionFields(){
         /*Min 0-59, hour 0-23, dom 1-31, month 1-12, dow 0-6*/
-        //Min
+        //if Editing job, first value should be current
+        //console.log("Populatte expr fields: currdevice ID- "+ currdeviceID)
+        //empty fields
         $("#cronExpMin").empty();
+        $("#cronExpHour").empty();
+        $("#cronExpDayMon").empty();
+        $("#cronExpMon").empty();
+        $("#cronExpDayWeek").empty();
+        //set initial value if editing
+        if (currdeviceID>0){
+          //Min
+          $("#cronExpMin").append(
+            $('<option></option>').attr("value",data.Job.Minute).attr("id","min+*").text(data.Job.Minute)
+          );
+          //Hour
+          $("#cronExpHour").append(
+            $('<option></option>').attr("value",data.Job.Hour).attr("id","min+*").text(data.Job.Hour)
+          );
+          //Day Mon
+          $("#cronExpDayMon").append(
+            $('<option></option>').attr("value",data.Job.Day_Month).attr("id","min+*").text(data.Job.Day_Month)
+          );
+          //Mon
+          $("#cronExpMon").append(
+            $('<option></option>').attr("value",data.Job.Month).attr("id","min+*").text(data.Job.Month)
+          );
+          //DayWeek
+          $("#cronExpDayWeek").append(
+            $('<option></option>').attr("value",data.Job.Day_Week).attr("id","min+*").text(data.Job.Day_Week)
+          );
+
+        }
+        //populate the rest of the fields
+        
+        
+        
         $("#cronExpMin").append(
             $('<option></option>').attr("value","*").attr("id","min+*").text("*")
           )
@@ -637,7 +724,7 @@
           )
         }
         //Hour
-        $("#cronExpHour").empty();
+        
         $("#cronExpHour").append(
             $('<option></option>').attr("value","*").attr("id","hour+*").text("*")
           )
@@ -647,7 +734,7 @@
           )
         }
         //DayMon
-        $("#cronExpDayMon").empty();
+        
         $("#cronExpDayMon").append(
             $('<option></option>').attr("value","*").attr("id","daymon+*").text("*")
           )
@@ -657,7 +744,7 @@
           )
         }
         //Month
-        $("#cronExpMon").empty();
+        
         $("#cronExpMon").append(
             $('<option></option>').attr("value","*").attr("id","mon+*").text("*")
           )
@@ -667,7 +754,7 @@
           )
         }
         //DayWeek
-        $("#cronExpDayWeek").empty();
+        
         $("#cronExpDayWeek").append(
             $('<option></option>').attr("value","*").attr("id","dayweek+*").text("*")
           )
@@ -678,12 +765,20 @@
         }
       }
 
-      function updateCronVerbFields(cronEvery){
+      function updateCronVerbFields(cronEvery,value){
+        
         $("#cronEveryValue").empty();
         switch(cronEvery){
           case "Seconds":
+          if (value!==0){
             
+                $("#cronEveryValue").append(
+                $('<option></option>').attr("value",value).attr("id","everyValue+id").text(value)
+              );
+              }
             for(let i =1; i<60;i++){
+              
+
               $("#cronEveryValue").append(
                 $('<option></option>').attr("value",i).attr("id","everyValue+id").text(i)
               );
@@ -702,6 +797,13 @@
             break;
 
           case "Hours":
+            console.log("edit verbal instr at: ", cronEvery,value)
+            if (value!==0){
+            
+                $("#cronEveryValue").append(
+                $('<option></option>').attr("value",value).attr("id","everyValue+id").text(value)
+              );
+              }
             for(let i =1; i<24;i++){
               $("#cronEveryValue").append(
                 $('<option></option>').attr("value",i).attr("id","everyValue+id").text(i)
@@ -824,6 +926,7 @@
     }
 
     function verbalInstructionSet(cronEvery){
+      console.log("editing verbal instr setting 'every' field: ", cronEvery)
       cronEveryVal = $("#cronEveryValue").val()
       switch(cronEvery){
               case "Seconds":
@@ -845,6 +948,44 @@
 
     }
 
+    function getVerbalInstrVal(VerbalInstr){
+      let every
+      let value
+
+      let seconds = VerbalInstr.Seconds
+      let minutes= VerbalInstr.Minutes
+      let hours= VerbalInstr.Hours
+      let days = VerbalInstr.Days
+      let months = VerbalInstr.Months
+
+      if (seconds !=0){
+        every = "Seconds"
+        value = seconds
+      }
+
+      if (minutes !=0){
+        every = "Minutes"
+        value = minutes
+      }
+
+      if (hours !=0){
+        every = "Hours"
+        value  = hours
+      }
+
+      if (days !=0){
+        every = "Days"
+        value = days
+      }
+
+      if (months !=0){
+        every = "Months"
+        value = months
+      }
+
+
+      return {every,value}
+    }
     });//end of document ready
       </script>
    
