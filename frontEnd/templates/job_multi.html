@@ -1,63 +1,1499 @@
-{% extends "base.html" %}
 
+
+{% extends "base.html" %}
+{% load static %}
 {% block page_content %}
+<div class="container">
+  {% if not job %}
+  <h2>New Multi-Step Job</h2>
+  {% else %}
+  <h2>Edit Multi-Step Job</h2>
+  {% endif %}
+</div>
+
+
 
 <div class="container">
-    {%if devices.1.Category == Sensor %}
-    <h2>Add Sensor </h2>
-    <a href="/terra-pi/sensor/new"><button type="button" class="btn">Add</button> </a>
-    {% else %}
-    <h2>Add Device </h2>
-    <a href="/terra-pi/device/new"><button type="button" class="btn">Add</button> </a>
-    {% endif%}
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="name">Job Name:</label>
+        <div class="col-sm-10">
+          <input  class="form-control" id="name"{% if job.Name %} value="{{job.Name}}" {% else %}  placeholder="Job Name"{% endif%}>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="description">Job Description:</label>
+        <div class="col-sm-10">
+          <input  class="form-control" id="description"{% if job.Name %} value="{{job.Description}}" {% else %}  placeholder="Job Description"{% endif%}>
+        </div>
+      </div>
+
+      
+      <h3>Condition</h3>
+      <div class="form-inline">
+        <div class="input-group-prepend" >
+          <label class="input-group-text" for="condition"> If </label>
+        </div>
+        <select class="custom-select" id="conditionType">
+          <options id="device-options"></options>
+        </select>  
+        <select class="custom-select" id="condition">
+          <options id="device-options"></options>
+        </select>  
+        <select class="custom-select" id="conditionValue">
+          <options id="device-options"></options>
+        </select>  
+      
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio3" value="both" {% if job.CDevice_ID  and job.MDevice_ID  %} checked{% else%} checked {%endif%}>
+        <label class="form-check-label" for="inlineRadio3">Trigger Both </label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="device" {% if job.CDevice_ID > 0 %} checked {%endif%}>
+        <label class="form-check-label" for="inlineRadio1">Trigger Device</label>
+      </div>
+      <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="message"{% if job.MDevice_ID > 0%} checked {%endif%}>
+        <label class="form-check-label" for="inlineRadio2">Trigger Message</label>
+      </div>
+      <!-- New Job only fields-->
+    </div>
+      {% if not job.Device_ID%}
+      
+      
+    
+      <h3>Sensor</h3>
+      <!--Sensor Device -->
+      <div class="form-inline">
+          <div class="input-group-prepend" >
+            <label class="input-group-text" for="type">Sensor </label>
+          </div>
+          <select class="custom-select" id="currsensor">
+            <options id="sensor-options"></options>
+          </select>  
+      </div>
+
+      <fieldset disabled>
+        <div class="form-inline">
+          
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="disabledSensorName">Sensor Name</label>
+          </div>
+          <input type="text" id="disabledSensorName" class="form-control" placeholder="No input">
+          <!---->
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="disabledSensorCategory">Sensor Category</label>
+          </div>
+          <input type="text" id="disabledSensorCategory" class="form-control" placeholder="No input">
+          <!---->
+          <div class="input-group-prepend">
+            <label class="input-group-text" for="disabledSensorType">Sensor Type</label>
+          </div>
+          <input type="text" id="disabledSensorType" class="form-control" placeholder="No input">
+        </div>
+      </fieldset>
+      <!--GPIO pins-->
+      <fieldset disabled>
+      <div class="form-inline">
+        
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="sensorPin1">GPIO Pin1</label>
+        </div>
+        <input type="text" id="sensorPin1" class="form-control" placeholder="No input">
+        <!---->
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="sensorPin2">GPIO Pin2</label>
+        </div>
+        <input type="text" id="sensorPin2" class="form-control" placeholder="No input">
+        <!---->
+        <div class="input-group-prepend">
+          <label class="input-group-text" for="sensorPin3">GPIO Pin 3</label>
+        </div>
+        <input type="text" id="sensorPin3" class="form-control" placeholder="No input">
+      </div>
+    </fieldset>
+    <br>
+
+    <!--Message Device-->
+    <h3>Notification Device</h3>
+
+<div class="form-inline">
+  <div class="input-group-prepend" >
+    <label class="input-group-text" for="currnotificationdevice">Notification Device </label>
+  </div>
+  <select class="custom-select" id="currnotificationdevice">
+    <options id="notificationdevice-options"></options>
+  </select> 
+</div>
+
+<fieldset disabled>
+<div class="form-inline">
+  
+  <div class="input-group-prepend">
+    <label class="input-group-text" for="notificationDeviceName">Device Name</label>
+  </div>
+  <input type="text" id="notificationDeviceName" class="form-control" placeholder="No input">
+  <!---->
+  <div class="input-group-prepend">
+    <label class="input-group-text" for="notificationDeviceCategory">Device Category</label>
+  </div>
+  <input type="text" id="notificationDeviceCategory" class="form-control" placeholder="No input">
+  <!---->
+  <div class="input-group-prepend">
+    <label class="input-group-text" for="notificationDeviceType">Device Type</label>
+  </div>
+  <input type="text" id="notificationDeviceType" class="form-control" placeholder="No input">
+</div>
+</fieldset>
+<!--GPIO pins-->
+<fieldset disabled>
+<div class="form-inline">
+
+<div class="input-group-prepend">
+  <label class="input-group-text" for="notificationPin1">GPIO Pin1</label>
+</div>
+<input type="text" id="notificationPin1" class="form-control" placeholder="No input">
+<!---->
+<div class="input-group-prepend">
+  <label class="input-group-text" for="notificationPin2">GPIO Pin2</label>
+</div>
+<input type="text" id="notificationPin2" class="form-control" placeholder="No input">
+<!---->
+<div class="input-group-prepend">
+  <label class="input-group-text" for="notificationPin3">GPIO Pin 3</label>
+</div>
+<input type="text" id="notificationPin3" class="form-control" placeholder="No input">
+</div>
+</fieldset>
+<!--Notification-->
+    <div class="form-group">
+      <label for="message">Message</label>
+      <textarea class="form-control" id="message" rows="3">{% if job.Message%} {{job.Message}}{% endif %}</textarea>
+    </div>
+    
+    <!--Device -->
+    <h3>Device</h3>
+    <div class="form-inline">
+      
+     
+      <div class="input-group-prepend" >
+        <label class="input-group-text" for="type">Device </label>
+      </div>
+      <select class="custom-select" id="currdevice">
+        <options id="device-options"></options>
+      </select>
+
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="type">Device On/Off</label>
+      </div>
+      <select class="custom-select" id="onOff">
+        <option value="ON">ON</option>>
+        <option value="OFF">Off</option>
+      </select>
+      
       
   </div>
-<div class="container">
-  {%if devices.1.Category == Sensor %}
-  <h2>Sensors</h2>
-    <p>Configured sensors</p> 
-  {% else %}
-  <h2>Devices</h2>
-    <p>Configured devices</p> 
-  {%endif%}
-    {% if devices|length > 0%}           
-    <table class="table table-hover">
-      <thead>
-        <tr>
-          {%if devices.1.Category == Sensor %}
-          <th>Sensor Name</th>
-          {% else %}
-          <th>Device Name</th>
-          {% endif %}
-          <th>Type</th>
-          <th>Category</th>
-          <th>Pin1</th>
-          <th>Pin2</th>
-          <th>Pin3</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        
-        {% for device in devices %}
-        <tr>
-          <td>{{ device.Name }}</td>
-          <td>{{ device.Type }}</td>
-          <td>{{ device.Category }}</td>
-          <td>{{ device.Pin1 }}</td>
-          <td>{{ device.Pin2 }}</td>
-          <td>{{ device.Pin3 }}</td>
-          
-          <td> <a href="/terra-pi/job/{{job.ID}}"> <button type="button" class="btn">Edit</button></a> </td>
-          
-        </tr>
-        {% endfor %}
-        
-      </tbody>
-    </table>
-    {% else %}
-    <h2>No Devices</h2>
-    {%endif%}
-  </div>
 
+  <fieldset disabled>
+    <div class="form-inline">
+      
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="disabledDeviceName">Device Name</label>
+      </div>
+      <input type="text" id="disabledDeviceName" class="form-control" placeholder="No input">
+      <!---->
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="disabledDeviceCategory">Device Category</label>
+      </div>
+      <input type="text" id="disabledDeviceCategory" class="form-control" placeholder="No input">
+      <!---->
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="disabledDeviceType">Device Type</label>
+      </div>
+      <input type="text" id="disabledDeviceType" class="form-control" placeholder="No input">
+    </div>
+  </fieldset>
+  <!--GPIO pins-->
+  <fieldset disabled>
+  <div class="form-inline">
+    
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="disabledPin1">GPIO Pin1</label>
+    </div>
+    <input type="text" id="disabledPin1" class="form-control" placeholder="No input">
+    <!---->
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="disabledPin2">GPIO Pin2</label>
+    </div>
+    <input type="text" id="disabledPin2" class="form-control" placeholder="No input">
+    <!---->
+    <div class="input-group-prepend">
+      <label class="input-group-text" for="disabledPin3">GPIO Pin 3</label>
+    </div>
+    <input type="text" id="disabledPin3" class="form-control" placeholder="No input">
+  </div>
+</fieldset>
+
+{% endif %}
+
+<!--End of new job only fields-->
+<br>
+      <h3>CRON</h3>
+    <!--CRON fields-->
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="cronCheck">
+      <label class="form-check-label" for="flexCheckDefault">
+        Use Verbal Instruction
+      </label>
+    </div>
+    
+    <!-- Verbal command-->
+    <h4>Verbal Instruction</h4>
+    <div class="form-inline">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="cronEvery">Every</label>
+      </div>
+      <select class="custom-select" id="cronEveryValue">
+       
+      </select>
+      <select class="custom-select" id="cronEvery">
+        <option value="Seconds">Second(s)</option>
+        <option value="Minutes">Minute(s)</option>
+        <option value="Hours">Hours(s)</option>
+        <option value="Days">Day(s)</option>
+        <option value="Months">Month(s)</option>
+      </select>
+
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="cronAt">At</label>
+      </div>
+      <input type="text" id="cronAt" class="form-control" placeholder="">
+
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="cronDaysMonth">Days of Month</label>
+      </div>
+      <input type="text" id="cronDaysMonth" class="form-control" placeholder="">
+
+      </div>
+    <!--Cron Format-->
+    <h4>Cron Expression</h4>
+    <div class="form-inline">
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="cronExpMin">Minute</label>
+      </div>
+      <select class="custom-select" id="cronExpMin">
+        <option> {{job.Minute}}</option>
+      </select>
+      
+      
+
+      <div class="input-group-prepend">
+        <label class="input-group-text" for="cronExpHour">Hour</label>
+      </div>
+      <select class="custom-select" id="cronExpHour">
+        <option> {{job.Hour}}</option>
+      </select>
+      
+      <div class="input-group-prepend" >
+        <label class="input-group-text" for="cronExpDayMon">Day-Month </label>
+      </div>
+      <select class="custom-select" id="cronExpDayMon">
+        <option> {{job.Day_Month}}</option>
+      </select>
+      <div class="input-group-prepend" >
+        <label class="input-group-text" for="cronExpMon">Month </label>
+      </div>
+      <select class="custom-select" id="cronExpMon">
+        <option> {{job.Month}}</option>
+      </select>
+      <div class="input-group-prepend" >
+        <label class="input-group-text" for="cronExpDayWeek">Day-Week</label>
+      </div>
+      <select class="custom-select" id="cronExpDayWeek">
+        <option> {{job.Day_Week}}</option>
+      </select>
+      
+</div>
+      
+          
+      <!--Hidden fields-->
+      <!--Current device ID-->
+      <input type="hidden" id="jobID" name="jobID" value="{{job.ID}}">
+      <input type="hidden" id="verbalInstrString" name="verbalInstr" value="{{job.VerbalInstr}}">
+      <input type="hidden" id="jobDeviceID" name="jobDeviceID" value="{{job.Device_ID}}">
+      <input type="hidden" id="jobMDeviceID" name="jobMDeviceID" value="{{job.MDevice_ID}}">
+      <input type="hidden" id="jobCDeviceID" name="jobCDeviceID" value="{{job.CDevice_ID}}">
+      <input type="hidden" id="jobCondition" name="jobCondition" value="{{job.Condition}}">
+      <input type="hidden" id="scriptName" name="scriptName" value="{{job.ScriptName}}">
+      <input type="hidden" id="message" name="message" value="{{job.Message}}">
+      <input type="hidden" id="onOff" name="onOff" value="{{job.DeviceOnOff}}">
+      
+
+      <!--Buttons-->
+      <div class="container">
+        {% if not job %}
+        <button id="submit"class="btn ">Submit</button>
+        {% else %}
+        <button id="edit"class="btn ">Edit</button>
+        {% endif %}
+      
+        {% if job.ID  %}
+        <button id="delete"class="btn ">Delete</button>
+        {% endif %}
+      </div>
+
+      <br>
+
+      
+    <script>
+      /**Global variables*/
+      var data  ={
+        "Job":{
+        "ID":0,
+        
+	      "Start_Time":"",
+	      "End_Time": "",
+	      "ScriptName":  "",
+	      "Name" : "TestEmail",
+	      "Description": "Send Test Email",
+	      "Device_ID"  : 0,
+	      "Duration"  : "",
+	      "DeviceOnOFF" :"",
+	
+	      "MDevice_ID": 0,
+	      "MCondition" :"",
+	      "Message":"",
+	      "Condition" : "",
+	      "CDevice_ID": 0,
+
+	      "VerbalInstr":"",
+	      "Minute"    :"",
+	      "Hour"     : "",
+	      "Day_Month" :"",
+	      "Month"     :"",
+	      "Day_Week"  :""
+      }
+    }
+
+    var VerbalInstr = {
+      "Seconds": 0,
+      "Days":0,
+      "Months":0,
+      "Hours":0,
+      "Minutes":0,
+      "MonthsString":"",
+      "At" :""        
+    }
+
+    var Condition = {
+      "Type": "",
+      "Operator":"",
+      "Value":0,
+              
+    }
+
+    /*Document ready function*/
+      $(document).ready(function(){
+        serverURL = $("serverURL").val()
+        /*variables*/
+        var id = parseInt($("#jobID").val())
+        var name = $("#name").val()
+        var description = $("#description").val();
+        //var category = $("#category").val();
+        
+        var mydeviceName = $("#currdevice").val();
+        var currdeviceID = $("#jobID").val();
+
+        var allDevices;
+
+        var mydeviceID  = $("#jobCDeviceID")
+        var mydevice
+        var mydevices;
+
+        var mysensors
+        var mysensor
+        var mysensorID =$("#jobDeviceID")
+        var mysensorType
+
+        var mynotificationdevices
+        var mynotificationdevice
+        var mynotificationdeviceID =$("#jobMDeviceID")
+
+        var conditionString = $("#jobCondition").val()
+        if(conditionString !==""){
+          Condition = JSON.parse(conditionString)
+        }
+        
+        
+        var isCheckCron = false
+        var cronEvery = $("#cronEvery").val()
+        var cronEveryVal=0
+        var cronAtString =""
+        var cronDayMonthString=""
+        var message 
+
+        var selectedVal = "";
+        var selected = $("input[type='radio']:checked");
+        if (selected.length > 0) {
+          selectedVal = selected.val();
+          console.log("Radio button:",selectedVal)
+        }
+        //set condition
+        getDevices("").done(populateAll)
+        
+        console.log("getdevices after",allDevices)
+        
+        //get sensor, device, and message device
+        
+      
+        
+        
+        
+        
+        //get cron expr values
+        data.Job.Minute = $("#cronExpMin").val()
+        data.Job.Hour = $("#cronExpHour").val()
+        data.Job.Day_Month = $("#cronExpDayMon").val()
+        data.Job.Month = $("#cronExpMon").val()
+        data.Job.Day_Week = $("#cronExpDayWeek").val()
+        
+        
+        //get verbal instr string
+        var verbalInstrString = $("#verbalInstrString").val()
+        data.Job.VerbalInstr = verbalInstrString
+        
+        //if verbal instr exists
+        if (verbalInstrString !=="" && verbalInstrString !== null){
+          
+          verbalInstr = JSON.parse(verbalInstrString)
+          VerbalInstr = verbalInstr
+          cronAtString =VerbalInstr.At 
+          cronDayMonthString = VerbalInstr.MonthsString
+          $("#cronCheck").prop('checked',true)
+          isCheckCron = true
+
+          $("#cronAt").val(VerbalInstr.At)
+          $("#cronDaysMonth").val(VerbalInstr.MonthsString)
+
+          let evalue= getVerbalInstrVal(VerbalInstr)
+          let mevery = evalue.every
+          let mvalue = evalue.value
+          
+          console.log("verbal isntr exists",mevery, mvalue)
+          updateCronVerbFields(mevery,mvalue)
+          verbalInstructionSet(mevery)
+          console.log(mevery)
+           $("#cronEvery").val(mevery)
+          //set Verbal Instr
+        }else{
+          console.log("no verbal instr")
+          updateCronVerbFields(cronEvery,0)
+        }
+        populateCronExpressionFields()
+      
+
+        /*call java script functions here*/
+        //if currdeviceID exists, call get request
+        
+        if(currdeviceID!=0){
+          console.log("Edit job - get current device")
+        }else{
+          console.log("New job - get list of available devices")
+          
+        }
+        
+       
+        
+        cronEveryVal = parseInt($("#cronEveryValue").val())
+        console.log("Every val steart doc: "+cronEveryVal)
+
+        /*JQuery Field functions*/
+        $("#conditionType").change(function(){
+          let ctype = $(this).val()
+          console.log(ctype)
+          $("#condition").empty()
+          $("#condition").append($('<option></option>').attr("value",">").attr("id","Temp_Hum"+">").text(">"))
+          $("#condition").append($('<option></option>').attr("value","<").attr("id","Temp_Hum"+"<").text("<"))
+          $("#condition").append($('<option></option>').attr("value","==").attr("id","Temp_Hum"+"==").text("=="))
+          $("#condition").append($('<option></option>').attr("value","!=").attr("id","Temp_Hum"+"!=").text("!="))
+          $("#condition").append($('<option></option>').attr("value",">=").attr("id","Temp_Hum"+">=").text(">="))
+          $("#condition").append($('<option></option>').attr("value","<=").attr("id","Temp_Hum"+"<=").text("<="))
+          switch(ctype){
+          case "Temperature":
+            $("#conditionType").empty()
+            $("#conditionType").append($('<option></option>').attr("value","Temperature").attr("id","Temperature").text("Temperature"))
+            $("#conditionType").append($('<option></option>').attr("value","Humidity").attr("id","Humudity").text("Humidity"))
+            $("#conditionValue").empty()
+            for(let i=-70; i<141;i++){
+              $("#conditionValue").append(
+                $('<option></option>').attr("value",i).attr("id","Temp_Hum"+i).text(i+"F")
+                );}
+
+              break;
+            case "Humidity":
+            $("#conditionType").empty()
+            $("#conditionType").append($('<option></option>').attr("value","Humidity").attr("id","Humudity").text("Humidity"))
+            $("#conditionType").append($('<option></option>').attr("value","Temperature").attr("id","Temperature").text("Temperature"))
+            $("#conditionValue").empty()
+            for(let i=0; i<101;i++){
+              $("#conditionValue").append(
+                $('<option></option>').attr("value",i).attr("id","Temp_Hum"+i).text(i+"%")
+                );}
+              break;
+          }
+        });
+
+        $("input[type='radio']").change(function(){
+          selectedVal = "";
+          selected = $("input[type='radio']:checked");
+          if (selected.length > 0) {
+            selectedVal = selected.val();
+            console.log("Radio button:",selectedVal)
+          }
+        }
+        );
+
+        $("#cronDaysMonth").change(function(){
+           cronDayMonthString= $(this).val()
+        })
+        $("#cronAt").change(function(){
+          cronAtString = $(this).val()
+        })
+        $("#cronCheck").click(function(){
+          if($(this).is(':checked')){
+            //use verbal
+            isCheckCron =  true
+            data.Job.VerbalInstr = ""
+            data.Job.MonthsString =""
+            data.Job.Minute =""
+            data.Job.Hour = ""
+            data.Job.Day_Month =""
+            data.Job.Month =""
+            data.Job.Day_Week=""
+
+            
+	    
+          }else{
+            //use Expression
+            isCheckCron =  false
+            data.Job.VerbalInstr = ""
+            
+          }
+          console.log(isCheckCron)
+        });
+        $("#cronEvery").change(function(){
+          //reset Job
+          data.Job.VerbalInstr = ""
+          data.Job.Minute =""
+          data.Job.Hour = ""
+          data.Job.Day_Month =""
+          data.Job.Month =""
+          data.Job.Day_Week=""
+          //reset verbalInstr
+          VerbalInstr.Seconds =0
+          VerbalInstr.Minutes=0
+          VerbalInstr.Hours =0
+          VerbalInstr.Days=0
+          VerbalInstr.Months=0
+
+          cronEvery  = $(this).val()
+          
+          
+          updateCronVerbFields(cronEvery,0)
+          
+          
+          $("#cronAt").val("")
+          $("#cronDaysMonth").val("")
+          $("#cronAt").attr("placeholder","");
+          $("#cronDaysMonth").attr("placeholder","");
+
+          cronAtString = ""
+          cronDayMonthString=""
+          VerbalInstr.At = cronAtString
+          VerbalInstr.MonthsString= cronDayMonthString
+          
+          
+          
+          switch(cronEvery){
+                case "Seconds":
+                
+                  VerbalInstr.Seconds = cronEveryVal
+                  break;
+                case "Minutes":
+                
+                  VerbalInstr.Minutes=cronEveryVal
+                  break;
+                case "Hours":
+                
+                  VerbalInstr.Hours = cronEveryVal
+                  break;
+                case "Days":
+                
+                
+                 console.log("Days")
+                  console.log(cronEveryVal)
+                  $("#cronAt").attr("placeholder","10:15;08:05");
+                  
+                  VerbalInstr.Days = cronEveryVal
+                  VerbalInstr.At = cronAtString
+                  break;
+              
+                case "Months":
+                
+                  $("#cronDaysMonth").attr("placeholder","1,2,3,4");
+                  
+                  VerbalInstr.Months = cronEveryVal
+                  VerbalInstr.MonthsString = cronDayMonthString
+                  break;
+                default:
+           
+                break;
+              }
+          
+
+          
+
+          
+
+        });
+
+        $("#cronEveryValue").change(function(){
+          console.log("Every val change")
+          cronEveryVal = parseInt($("#cronEveryValue").val())
+        });
+
+        $("#name").change(function() {
+          name = $(this).val() 
+        
+        });
+        $("#type").change(function() {
+          type = $(this).val() 
+        
+        });
+        
+        $("#description").change(function(){
+          description =  $(this).val()
+        })
+
+        $("#category").change(function() {
+          currCategory = $(this).val()
+          
+          getDevices(currCategory)
+
+        });
+
+        $("#currdevice").change(function(){
+          mydeviceID = $(this).children(":selected").attr("id")
+          console.log(mydeviceID)
+         
+          
+          mydevice = getDeviceFromID(mydeviceID,mydevices)
+          //mydevices = filterDevice(mydevices, category)
+          populateDevice(mydevice)
+          
+        });
+
+        $("#currsensor").change(function(){
+          mysensorID = $(this).children(":selected").attr("id")
+          console.log(mysensorID)
+          
+          
+          mysensor = getDeviceFromID(mysensorID,mysensors)
+          mysensorType = mysensor.Type
+          //mydevices = filterDevice(mydevices, category)
+          populateSensor(mysensor)
+          populateConditionFields(mysensorType)
+          
+        });
+
+        $("#currnotificationdevice").change(function(){
+          mynotificationdeviceID = $(this).children(":selected").attr("id")
+          console.log(mynotificationdeviceID)
+          currCategory = $(this).val() 
+          
+          mynotificationdevice = getDeviceFromID(mynotificationdeviceID,mynotificationdevices)
+          //mydevices = filterDevice(mydevices, category)
+          populateDevice(mynotificationdevice)
+          
+        });
+
+        //Job submission
+        $("#submit").click(function(){
+          
+          canSubmit = true
+          
+          data.Job.Name = name
+          data.Job.Description = description
+          data.Job.Device_ID = mysensor.ID
+          let conditionString = ""
+          Condition.Type = $("#conditionType").val()
+          Condition.Operator = $("#condition").val()
+          Condition.Value = $("#conditionValue").val()
+          conditionString = JSON.stringify(Condition)
+          data.Job.Condition = conditionString
+          
+
+          message = $("#message").val()
+          if(selectedVal==="both"){
+            data.Job.MDevice_ID = mynotificationdevice.ID
+            data.Job.CDevice_ID = mydevice.ID
+            data.Job.Message = message
+            data.Job.DeviceOnOFF = $("#onOff").val()
+            
+          }
+
+          if(selectedVal==="message"){
+            data.Job.MDevice_ID = mynotificationdevice.ID
+            data.Job.Message = message
+            data.Job.DeviceOnOFF = ""
+          }
+
+          if(selectedVal==="device"){
+            data.Job.CDevice_ID = mydevice.ID
+            data.Job.Message = ""
+            data.Job.DeviceOnOFF = $("#onOff").val()
+          }
+
+
+          if(name===""){
+            canSubmit= false
+            alert("Please type in a name for the job")
+          }
+          if(description===""){
+            canSubmit= false
+            alert("Please type in a description")
+          }
+         
+          if(!checkAtString(cronAtString) || !checkDaysOfMonthString(cronDayMonthString)){
+            
+            canSubmit= false
+           
+            alert("Please check string format for 'At' or 'Days of Month'")
+          }
+
+          
+          if((selectedVal ==="both"||selectedVal==="message")&& message===""){
+              alert("Please type in a message")
+              canSubmit=false
+          }
+
+          //checkAt and Months fields
+          console.log("Submitting cron every : "+cronEvery)
+            switch(cronEvery){
+              case "Days":
+                VerbalInstr.At = $("#cronAt").val()
+                VerbalInstr.MonthsString =""
+                break;
+              case "Months":
+                VerbalInstr.MonthsString =$("#cronDaysMonth").val()
+                VerbalInstr.At =""
+                break;
+              default:
+                break;
+            }
+
+          if(isCheckCron){
+             
+            console.log("is check cron", VerbalInstr)
+             data.Job.VerbalInstr = JSON.stringify(VerbalInstr)
+             data.Job.Minute = ""
+             data.Job.Hour = ""
+             data.Job.Day_Month =""
+             data.Job.Month = ""
+             data.Job.Day_Week =""
+            
+             
+           }else{
+             data.Job.VerbalInstr =""
+             data.Job.Minute = $("#cronExpMin").val()
+             data.Job.Hour = $("#cronExpHour").val()
+             data.Job.Day_Month =$("#cronExpDayMon").val()
+             data.Job.Month = $("#cronExpMon").val()
+             data.Job.Day_Week =$("#cronExpDayWeek").val()
+            
+             
+           }
+
+          if(canSubmit==true){
+            
+            
+            
+            
+            
+           
+            //use message if Notification
+            category = mydevice.Category
+            console.log("Before check category: "+category)
+            
+
+            console.log(VerbalInstr)
+              console.log("Submitting",data)
+            //set ON/Off if device
+            
+            $.ajax({
+                type: 'POST',
+                url: serverURL+'job/add',
+                contentType: 'application/json',
+                data: JSON.stringify(data), // access in body
+            }).done(function () {
+                console.log('SUCCESS');
+                window.location.href = "/terra-pi/jobs/"
+            }).fail(function (msg) {
+                console.log('FAIL');
+            }).always(function (msg) {
+                console.log('ALWAYS');
+            });
+          } 
+          else{
+            alert("Did not Submit")
+          }
+        });
+//edit button function
+        $("#edit").click(function(){
+          canSubmit = true
+          data.Job.ScriptName = $("#scriptName").val()
+          data.Job.DeviceOnOFF = $("#onOff").val()
+          data.Job.Name = name
+          data.Job.Description = description
+          data.Job.Device_ID = mysensor.ID
+          let conditionString = ""
+          Condition.Type = $("#conditionType").val()
+          Condition.Operator = $("#condition").val()
+          Condition.Value = $("#conditionValue").val()
+          conditionString = JSON.stringify(Condition)
+          data.Job.Condition = conditionString
+
+          let message = $("#message").val()
+          if(message !==""){
+            data.Job.Message=message
+          }else{data.Job.Message = ""}
+
+          message = $("#message").val()
+          if(selectedVal==="both"){
+            data.Job.MDevice_ID = mynotificationdevice.ID
+            data.Job.CDevice_ID = mydevice.ID
+            data.Job.Message = message
+            data.Job.DeviceOnOFF = $("#onOff").val()
+            
+          }
+
+          if(selectedVal==="message"){
+            data.Job.MDevice_ID = mynotificationdevice.ID
+            data.Job.Message = message
+            data.Job.DeviceOnOFF = ""
+          }
+
+          if(selectedVal==="device"){
+            data.Job.CDevice_ID = mydevice.ID
+            data.Job.Message = ""
+            data.Job.DeviceOnOFF = $("#onOff").val()
+          }
+
+
+          if(name===""){
+            canSubmit= false
+            alert("Please type in a name for the device")
+          }
+          if(description===""){
+            canSubmit= false
+            alert("Please type in a device type")
+          }
+          console.log("Check at string and month", cronAtString, cronDayMonthString, canSubmit)
+          if(!checkAtString(cronAtString) || !checkDaysOfMonthString(cronDayMonthString)){
+            canSubmit= false
+            alert("check At string or Month string")
+          }
+          cronEvery = $("#cronEvery").val()
+          verbalInstructionSet(cronEvery)
+          if(canSubmit==true){
+            //checkAt and Months fields
+            console.log("Submitting cron every : "+cronEvery)
+            switch(cronEvery){
+              case "Days":
+                
+                VerbalInstr.At = $("#cronAt").val()
+                VerbalInstr.MonthsString =""
+                break;
+              case "Months":
+                VerbalInstr.MonthsString =$("#cronDaysMonth").val()
+                VerbalInstr.At =""
+                break;
+              
+              default:
+                break;
+            }
+          
+          if((selectedVal ==="both"||selectedVal==="message")&& message===""){
+              alert("Please type in a message")
+              canSubmit=false
+          }
+
+          if(isCheckCron){
+             
+            console.log("Edit job check cron", VerbalInstr)
+             data.Job.VerbalInstr = JSON.stringify(VerbalInstr)
+             data.Job.Minute = ""
+             data.Job.Hour = ""
+             data.Job.Day_Month =""
+             data.Job.Month = ""
+             data.Job.Day_Week =""
+            
+             
+           }else{
+            console.log("Edit job no check cron", VerbalInstr)
+             data.Job.VerbalInstr =""
+             data.Job.Minute = $("#cronExpMin").val()
+             data.Job.Hour = $("#cronExpHour").val()
+             data.Job.Day_Month =$("#cronExpDayMon").val()
+             data.Job.Month = $("#cronExpMon").val()
+             data.Job.Day_Week =$("#cronExpDayWeek").val()
+            
+             
+           }
+           
+
+          console.log(canSubmit)
+          
+            alert("Can edit")
+            console.log("Editing: ",data.Job)
+            
+             
+            $.ajax({
+                type: 'PUT',
+                url: serverURL+'job/edit/{{job.ID}}',
+                contentType: 'application/json',
+                data: JSON.stringify(data), // access in body
+            }).done(function () {
+                console.log('SUCCESS');
+                window.location.href = "/terra-pi/jobs/";
+            }).fail(function (msg) {
+                console.log('FAIL');
+            }).always(function (msg) {
+                console.log('ALWAYS');
+            });
+          } 
+          else{
+            alert("No edit")
+          }
+          
+          
+        });
+
+        $("#delete").click(function(){
+          data.Job.ID = parseInt(id)
+          if (data.Job.ID == 0 || data.Job.ID == ""){
+            alert("Delete unavailable")
+          }else{
+            let text = "Delete job?"
+            if(confirm(text)===true){
+          $.ajax({
+                type: 'DELETE',
+                url: serverURL+'job/delete/{{job.ID}}',
+                contentType: 'application/json',
+                
+            }).done(function () {
+                console.log('SUCCESS');
+                window.location.href = "/terra-pi/jobs/";
+            }).fail(function (msg) {
+                console.log('FAIL');
+            }).always(function (msg) {
+                console.log('ALWAYS');
+            });}
+          }
+        });
+
+        /*javascript functions*/
+        //make sure that this can handle no devices in DB
+        function getDevices(category){
+          
+         return $.ajax({
+                type: 'GET',
+                url: serverURL+'device/view-all?category='+category,
+                async:false,
+                success: function(res) {
+                  allDevices = JSON.parse(res)
+                }  
+              })           
+        
+        
+      }
+
+      function filterDevice(devices, category){
+        let mdevices 
+        
+        if (devices.length >1){
+          mdevices = devices.filter(element=>element.Category==category)
+          console.log("filter devices: ",mdevices)
+        }
+
+          return mdevices
+      }
+      function populateAll(){
+        
+        $("#currdevice").empty();
+        mynotificationdevices = filterDevice(allDevices,"Notification")
+        mysensors = filterDevice(allDevices,"Sensor")
+        mydevices =filterDevice(allDevices,"Device")
+        mydevice = mydevices[0]
+        mysensor = mysensors[0]
+        mynotificationdevice = mynotificationdevices[0]
+        mysensorType = mysensor.Type
+        populateConditionFields(mysensorType)
+        populateCurrDeviceField(mydevices)
+        populateCurrSensorField(mysensors)
+        populateSensor(mysensor)
+        console.log("pupolate all -",allDevices)
+        
+        populateDevice(mydevice)
+      
+        populateCurrNotificationDeviceField(mynotificationdevices)
+        
+      
+        populateNotificationDevice(mynotificationdevice)
+      }
+      function populateDeviceInfo(id){
+        if(id==0){
+          let curdev = mydevices[0]
+          
+        }else{
+
+        }
+      }
+
+      function getDeviceFromID(id,devices){
+        let mDevice = devices.find(element => element.ID==id)
+        console.log(mDevice)
+        return mDevice
+      }
+
+      function populateCurrDeviceField(mydevices){
+        mydevices.forEach(element => $("#currdevice").append(
+                      $('<option></option>').attr("value",element.Name).attr("id",element.ID).text(element.Name)
+                    ));
+        }
+        
+      function populateCurrSensorField(mysensors){
+        mysensors.forEach(element => $("#currsensor").append(
+                      $('<option></option>').attr("value",element.Name).attr("id",element.ID).text(element.Name)
+                    ));
+        }
+        function populateCurrNotificationDeviceField(mynotificationdevices){
+        mynotificationdevices.forEach(element => $("#currnotificationdevice").append(
+                      $('<option></option>').attr("value",element.Name).attr("id",element.ID).text(element.Name)
+                    ));
+        }
+      function populateConditionFields(sensortype){
+        console.log("populate condition fields", sensortype)
+        //condition: populate fields
+        $("#condition").empty()
+        $("#conditionType").empty()
+        
+        //populate condition value fields
+        $("#conditionValue").empty()
+        let unit ="";
+        switch(Condition.Type){
+          case "Temperature":
+            unit = "F";
+            break;
+          case "Humidity":
+            unit = "%";
+            break;
+          case "Distance":
+            unit = "CM";
+            break;
+          case "Light":
+            unit = "";
+            break;
+        }
+        if(Condition.Type!==""&&Condition.Value!==""){
+          $("#condition").append($('<option></option>').attr("value",Condition.Operator).attr("id","Temp_Hum"+Condition.Operator).text(Condition.Operator));
+          $("#conditionType").append($('<option></option>').attr("value",Condition.Type).attr("id",Condition.Type).text(Condition.Type));
+          $("#conditionValue").append($('<option></option>').attr("value",Condition.Value).attr("id","Temp_Hum"+Condition.Value).text(Condition.Value+unit));
+        }
+        $("#condition").append($('<option></option>').attr("value",">").attr("id","Temp_Hum"+">").text(">"))
+        $("#condition").append($('<option></option>').attr("value","<").attr("id","Temp_Hum"+"<").text("<"))
+        $("#condition").append($('<option></option>').attr("value","==").attr("id","Temp_Hum"+"==").text("=="))
+        $("#condition").append($('<option></option>').attr("value","!=").attr("id","Temp_Hum"+"!=").text("!="))
+        $("#condition").append($('<option></option>').attr("value",">=").attr("id","Temp_Hum"+">=").text(">="))
+        $("#condition").append($('<option></option>').attr("value","<=").attr("id","Temp_Hum"+"<=").text("<="))
+        switch (sensortype){
+        case "Temp_Hum":
+          $("#conditionType").append($('<option></option>').attr("value","Temperature").attr("id","Temperature").text("Temperature"))
+          $("#conditionType").append($('<option></option>').attr("value","Humidity").attr("id","Humudity").text("Humidity"))
+          
+          for(let i=-70; i<141;i++){
+        $("#conditionValue").append(
+            $('<option></option>').attr("value",i).attr("id","Temp_Hum"+i).text(i+"F")
+          );
+        }
+          break;
+        case "Motion":
+        $("#conditionType").append($('<option></option>').attr("value","Distance").attr("id","Dist").text("Distance"))
+        for(let i=0; i<2010;i=i+10){
+        $("#conditionValue").append(
+            $('<option></option>').attr("value",i).attr("id","Motion"+i).text(i+"CM")
+          );
+        }
+          break;
+        case "Light":
+        $("#conditionType").append($('<option></option>').attr("value","Light").attr("id","Light").text("Light Level"))
+        $("#condition").empty()
+        $("#condition").append($('<option></option>').attr("value","==").attr("id","Light"+"==").text("is"))
+        $("#conditionValue").append(
+            $('<option></option>').attr("value",1).attr("id","1").text("Light")
+          );
+          $("#conditionValue").append(
+            $('<option></option>').attr("value",0).attr("id","0").text("Dark")
+          );
+          break;
+        }
+      }
+
+      function populateSensor(sensor){
+        $("#disabledSensorName").val(sensor.Name) 
+        $("#disabledSensorCategory").val(sensor.Category) 
+        $("#disabledSensorType").val(sensor.Type) 
+        //tostring if needed
+        $("#sensorPin1").val(sensor.Pin1) 
+        $("#sensorPin2").val(sensor.Pin2) 
+        $("#sensorPin3").val(sensor.Pin3) 
+      }
+
+      function populateDevice(device){
+        
+        $("#disabledDeviceName").val(device.Name) 
+        $("#disabledDeviceCategory").val(device.Category) 
+        $("#disabledDeviceType").val(device.Type) 
+        //tostring if needed
+        $("#disabledPin1").val(device.Pin1) 
+        $("#disabledPin2").val(device.Pin2) 
+        $("#disabledPin3").val(device.Pin3) 
+        
+        
+      }
+
+      function populateNotificationDevice(ndevice){
+        $("#notificationDeviceName").val(ndevice.Name) 
+        $("#notificationDeviceCategory").val(ndevice.Category) 
+        $("#notificationDeviceType").val(ndevice.Type) 
+        //tostring if needed
+        $("#notificationPin1").val(ndevice.Pin1) 
+        $("#notificationPin2").val(ndevice.Pin2) 
+        $("#notificationPin3").val(ndevice.Pin3) 
+      }
+
+      function populateCronExpressionFields(){
+        /*Min 0-59, hour 0-23, dom 1-31, month 1-12, dow 0-6*/
+        //if Editing job, first value should be current
+        //console.log("Populatte expr fields: currdevice ID- "+ currdeviceID)
+        //empty fields
+        $("#cronExpMin").empty();
+        $("#cronExpHour").empty();
+        $("#cronExpDayMon").empty();
+        $("#cronExpMon").empty();
+        $("#cronExpDayWeek").empty();
+        //set initial value if editing
+        if (currdeviceID>0){
+          //Min
+          $("#cronExpMin").append(
+            $('<option></option>').attr("value",data.Job.Minute).attr("id","min+*").text(data.Job.Minute)
+          );
+          //Hour
+          $("#cronExpHour").append(
+            $('<option></option>').attr("value",data.Job.Hour).attr("id","min+*").text(data.Job.Hour)
+          );
+          //Day Mon
+          $("#cronExpDayMon").append(
+            $('<option></option>').attr("value",data.Job.Day_Month).attr("id","min+*").text(data.Job.Day_Month)
+          );
+          //Mon
+          $("#cronExpMon").append(
+            $('<option></option>').attr("value",data.Job.Month).attr("id","min+*").text(data.Job.Month)
+          );
+          //DayWeek
+          $("#cronExpDayWeek").append(
+            $('<option></option>').attr("value",data.Job.Day_Week).attr("id","min+*").text(data.Job.Day_Week)
+          );
+
+        }
+        //populate the rest of the fields
+        
+        
+        
+        $("#cronExpMin").append(
+            $('<option></option>').attr("value","*").attr("id","min+*").text("*")
+          )
+        for (let i=0;i<60; i++){
+          $("#cronExpMin").append(
+            $('<option></option>').attr("value",i).attr("id","min+id").text(i)
+          )
+        }
+        //Hour
+        
+        $("#cronExpHour").append(
+            $('<option></option>').attr("value","*").attr("id","hour+*").text("*")
+          )
+        for (let i=0;i<24; i++){
+          $("#cronExpHour").append(
+            $('<option></option>').attr("value",i).attr("id","hour+id").text(i)
+          )
+        }
+        //DayMon
+        
+        $("#cronExpDayMon").append(
+            $('<option></option>').attr("value","*").attr("id","daymon+*").text("*")
+          )
+        for (let i=1;i<32; i++){
+          $("#cronExpDayMon").append(
+            $('<option></option>').attr("value",i).attr("id","daymon+id").text(i)
+          )
+        }
+        //Month
+        
+        $("#cronExpMon").append(
+            $('<option></option>').attr("value","*").attr("id","mon+*").text("*")
+          )
+        for (let i=1;i<13; i++){
+          $("#cronExpMon").append(
+            $('<option></option>').attr("value",i).attr("id","mon+id").text(i)
+          )
+        }
+        //DayWeek
+        
+        $("#cronExpDayWeek").append(
+            $('<option></option>').attr("value","*").attr("id","dayweek+*").text("*")
+          )
+        for (let i=1;i<8; i++){
+          $("#cronExpDayWeek").append(
+            $('<option></option>').attr("value",i).attr("id","dayweek+id").text(i)
+          )
+        }
+      }
+
+      function updateCronVerbFields(cronEvery,value){
+        
+        $("#cronEveryValue").empty();
+        if (value!==0){
+            
+            $("#cronEveryValue").append(
+            $('<option></option>').attr("value",value).attr("id","everyValue+id").text(value)
+          );
+          }
+
+        switch(cronEvery){
+          case "Seconds":
+            for(let i =1; i<60;i++){
+              
+
+              $("#cronEveryValue").append(
+                $('<option></option>').attr("value",i).attr("id","everyValue+id").text(i)
+              );
+              
+            }
+            VerbalInstr.Seconds = parseInt($("#cronEveryValue").val())
+            break;
+            
+          case "Minutes":
+          
+            for(let i =1; i<60;i++){
+              $("#cronEveryValue").append(
+                $('<option></option>').attr("value",i).attr("id","everyValue+id").text(i)
+                );
+              }
+              VerbalInstr.Minutes = parseInt($("#cronEveryValue").val())
+            break;
+
+          case "Hours":
+            console.log("edit verbal instr at: ", cronEvery,value)
+            if (value!==0){
+            
+                $("#cronEveryValue").append(
+                $('<option></option>').attr("value",value).attr("id","everyValue+id").text(value)
+              );
+              }
+            for(let i =1; i<24;i++){
+              $("#cronEveryValue").append(
+                $('<option></option>').attr("value",i).attr("id","everyValue+id").text(i)
+                );
+              }
+              VerbalInstr.Hours = parseInt($("#cronEveryValue").val())
+            break;
+
+          case "Days":
+            for(let i =1; i<32;i++){
+              $("#cronEveryValue").append(
+                $('<option></option>').attr("value",i).attr("id","everyValue+id").text(i)
+                );
+              }
+              VerbalInstr.Days = parseInt($("#cronEveryValue").val())
+            break;
+
+          case "Months":
+            for(let i =1; i<13;i++){
+              $("#cronEveryValue").append(
+                $('<option></option>').attr("value",i).attr("id","everyValue+id").text(i)
+                );
+              }
+              VerbalInstr.Months = parseInt($("#cronEveryValue").val())
+            break;
+          default:
+            break;
+            
+
+        }
+        
+      }
+
+      function checkAtString(mystring){
+        
+        if (mystring ===""){
+          return true
+        }
+        let isCorrectString = false
+        if(mystring.includes(";")){
+          
+          array = mystring.split(";")
+          let len = array.length
+          array.forEach(val=>{
+           //check time format
+           isCorrectString =checkTimeFormat(val)
+          });
+          
+        }else{
+          //check time format
+          
+          isCorrectString = checkTimeFormat(mystring)
+        }
+          return isCorrectString
+      }
+
+      function checkDaysOfMonthString(mystring){
+        
+        if (mystring ===""){
+          return true
+        }
+        
+          let isCorrectString =  false
+          if(mystring.includes(",")){
+            array = mystring.split(",")
+              
+          
+            array.forEach( val=>{
+              console.log(val)
+              isCorrectString  = checkDaysMonth(val)
+            }
+              //check if number is between 1 and 31
+              
+            )
+          
+          }else{
+            //check if number is between 1 and 31
+            isCorrectString= checkDaysMonth(mystring)
+          }
+          return isCorrectString
+      }
+
+      function checkDaysMonth(string){
+        let day = parseInt(string)
+       
+        if(day>0&&day<32){
+          return true
+        }else{
+          return false
+        }
+      }
+
+      function checkTimeFormat(mystring){
+          let isValidTime = false
+          if(mystring.includes(":")){
+            let array = mystring.split(":")
+            if(array.length ===2){
+              console.log("array length is 2")
+              let hours = parseInt(array[0])
+              let minutes = parseInt(array[1])
+              if (hours >=0 && hours<24){
+                console.log("Hours "+ hours)
+                isValidTime =  true
+              } else{ 
+                
+              return false}
+              if (minutes>=0 &&minutes<60){
+                console.log("minutes "+ minutes)
+                isValidTime =  true
+              }else{
+                console.log("minutes invalid")
+                return false}
+            }else{
+              console.log("At: lenght is not 2") 
+              return false
+            }
+          
+      }else{return false}
+      return isValidTime
+    }
+
+    function verbalInstructionSet(cronEvery){
+      console.log("editing verbal instr setting 'every' field: ", cronEvery)
+      cronEveryVal = $("#cronEveryValue").val()
+      switch(cronEvery){
+              case "Seconds":
+                VerbalInstr.Seconds = cronEveryVal
+                  break;
+                case "Minutes":
+                VerbalInstr.Minutes = cronEveryVal
+                  break;
+                case "Hours":
+                VerbalInstr.Hours = cronEveryVal
+                  break;
+                case "Days":
+                VerbalInstr.Days = cronEveryVal
+                  break;
+                case "Months":
+                VerbalInstr.Months = cronEveryVal
+                  break;
+             }
+
+    }
+
+    function getVerbalInstrVal(VerbalInstr){
+      let every
+      let value
+
+      let seconds = VerbalInstr.Seconds
+      let minutes= VerbalInstr.Minutes
+      let hours= VerbalInstr.Hours
+      let days = VerbalInstr.Days
+      let months = VerbalInstr.Months
+
+      if (seconds !=0){
+        every = "Seconds"
+        value = seconds
+      }
+
+      if (minutes !=0){
+        every = "Minutes"
+        value = minutes
+      }
+
+      if (hours !=0){
+        every = "Hours"
+        value  = hours
+      }
+
+      if (days !=0){
+        every = "Days"
+        value = days
+      }
+
+      if (months !=0){
+        every = "Months"
+        value = months
+      }
+
+
+      return {every,value}
+    }
+    });//end of document ready
+      </script>
+   
 {% endblock %}

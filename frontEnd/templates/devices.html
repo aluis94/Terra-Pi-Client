@@ -4,14 +4,14 @@
 
 <div class="container">
   <h2>Add Device </h2>
-  <a href="/terra-pi/device/new"><button type="button" class="btn">Add</button> </a>
+  <a href="/terra-pi/device/new"><button id ="add" type="button" class="btn">Add</button> </a>
  
       
   </div>
 <div class="container">
   <h2>Devices</h2>
     <p>Configured devices</p> 
-    {% if devices|length > 0%}           
+              
     <table class="table table-hover">
       <thead>
         <tr>
@@ -65,9 +65,8 @@
         {% endfor %}</tbody>
     </table>
 
-    {% else %}
-    <h2>No Devices</h2>
-    {%endif%}
+    
+    
   </div>
 
 {% endblock %}

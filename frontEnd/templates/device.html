@@ -111,7 +111,7 @@
         "Category": "Device"
     }}
       $(document).ready(function(){
-        
+        var serverURL = $("#serverURL").val()
 
         var id = parseInt($("#deviceID").val())
         var name = $("#name").val();
@@ -167,7 +167,7 @@
             
             $.ajax({
                 type: 'POST',
-                url: 'http://127.0.0.1:8080/device/add',
+                url: serverURL+'device/add',
                 contentType: 'application/json',
                 data: JSON.stringify(data), // access in body
             }).done(function () {
@@ -210,7 +210,7 @@
               alert("PUT button clicked: "+ data.Device.Pin1)
             $.ajax({
                 type: 'PUT',
-                url: 'http://127.0.0.1:8080/device/edit/{{device.ID}}',
+                url: serverURL+'device/edit/{{device.ID}}',
                 contentType: 'application/json',
                 data: JSON.stringify(data), // access in body
             }).done(function () {
@@ -230,17 +230,18 @@
         });
 
         $("#delete").click(function(){
+          data.Device.ID = parseInt(id)
           if (data.Device.ID == 0 || data.Device.ID == ""){
             alert("Delete unavailable")
           }else{
           $.ajax({
                 type: 'DELETE',
-                url: 'http://127.0.0.1:8080/device/delete/{{device.ID}}',
+                url: serverURL+'/device/delete/{{device.ID}}',
                 contentType: 'application/json',
                 
             }).done(function () {
                 console.log('SUCCESS');
-                window.location.href = "/terra-pi/sensors/";
+                window.location.href = "/terra-pi/devices/";
             }).fail(function (msg) {
                 console.log('FAIL');
             }).always(function (msg) {

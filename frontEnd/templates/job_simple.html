@@ -188,6 +188,8 @@
       <!--Current device ID-->
       <input type="hidden" id="jobID" name="jobID" value="{{job.ID}}">
       <input type="hidden" id="verbalInstrString" name="verbalInstr" value="{{job.VerbalInstr}}">
+      <input type="hidden" id="jobDeviceID" name="jobDeviceID" value="{{job.Device_ID}}">
+      <input type="hidden" id="scriptName" name="scriptName" value="{{job.ScriptName}}">
 
       <!--Buttons-->
       <div class="container">
@@ -238,7 +240,7 @@
     var VerbalInstr = {
       "Seconds": 0,
       "Days":0,
-      "Month":0,
+      "Months":0,
       "Hours":0,
       "Minutes":0,
       "MonthsString":"",
@@ -247,7 +249,7 @@
 
     /*Document ready function*/
       $(document).ready(function(){
-       
+        serverURL = $("#serverURL").val()
         /*variables*/
         var id = parseInt($("#jobID").val())
         var name = $("#name").val()
@@ -264,6 +266,8 @@
         var cronAtString =""
         var cronDayMonthString=""
         var message = $("#message").val()
+
+        
         
         //get cron expr values
         data.Job.Minute = $("#cronExpMin").val()
@@ -271,21 +275,29 @@
         data.Job.Day_Month = $("#cronExpDayMon").val()
         data.Job.Month = $("#cronExpMon").val()
         data.Job.Day_Week = $("#cronExpDayWeek").val()
-        
+        data.Job.ScriptName=$("#scriptName").val()
         //get verbal instr string
         var verbalInstrString = $("#verbalInstrString").val()
+        data.Job.VerbalInstr = verbalInstrString
         
         //if verbal instr exists
         if (verbalInstrString !=="" && verbalInstrString !== null){
+          
           verbalInstr = JSON.parse(verbalInstrString)
           VerbalInstr = verbalInstr
+          cronAtString =VerbalInstr.At 
+          cronDayMonthString = VerbalInstr.MonthsString
           $("#cronCheck").prop('checked',true)
+          isCheckCron = true
+
+          $("#cronAt").val(VerbalInstr.At)
+          $("#cronDaysMonth").val(VerbalInstr.MonthsString)
 
           let evalue= getVerbalInstrVal(VerbalInstr)
           let mevery = evalue.every
           let mvalue = evalue.value
           
-          console.log(mevery, mvalue)
+          console.log("verbal isntr exists",mevery, mvalue)
           updateCronVerbFields(mevery,mvalue)
           verbalInstructionSet(mevery)
           console.log(mevery)
@@ -469,20 +481,16 @@
             canSubmit= false
             alert("Please type in a description")
           }
-          if(mydevice.ID===0||mydevice.ID===""){
-            canSubmit = false
-            alert("No device selected")
-
-          }
+         
           if(!checkAtString(cronAtString) || !checkDaysOfMonthString(cronDayMonthString)){
+            
             canSubmit= false
+           
             alert("Please check string format for 'At' or 'Days of Month'")
           }
-          if(canSubmit==true){
-            
-            
-            //checkAt and Months fields
-            console.log("Submitting cron every : "+cronEvery)
+
+          //checkAt and Months fields
+          console.log("Submitting cron every : "+cronEvery)
             switch(cronEvery){
               case "Days":
                 VerbalInstr.At = $("#cronAt").val()
@@ -495,31 +503,38 @@
               default:
                 break;
             }
+
+          if(isCheckCron){
+             
+            console.log("is check cron", VerbalInstr)
+             data.Job.VerbalInstr = JSON.stringify(VerbalInstr)
+             data.Job.Minute = ""
+             data.Job.Hour = ""
+             data.Job.Day_Month =""
+             data.Job.Month = ""
+             data.Job.Day_Week =""
+            
+             
+           }else{
+             data.Job.VerbalInstr =""
+             data.Job.Minute = $("#cronExpMin").val()
+             data.Job.Hour = $("#cronExpHour").val()
+             data.Job.Day_Month =$("#cronExpDayMon").val()
+             data.Job.Month = $("#cronExpMon").val()
+             data.Job.Day_Week =$("#cronExpDayWeek").val()
+            
+             
+           }
+
+          if(canSubmit==true){
             
             
-            if(isCheckCron){
-             
-              
-              data.Job.VerbalInstr = JSON.stringify(VerbalInstr)
-              data.Job.Minute = ""
-              data.Job.Hour = ""
-              data.Job.Day_Month =""
-              data.Job.Month = ""
-              data.Job.Day_Week =""
-             
-              
-            }else{
-              data.Job.VerbalInstr =""
-              data.Job.Minute = $("#cronExpMin").val()
-              data.Job.Hour = $("#cronExpHour").val()
-              data.Job.Day_Month =$("#cronExpDayMon").val()
-              data.Job.Month = $("#cronExpMon").val()
-              data.Job.Day_Week =$("#cronExpDayWeek").val()
-             
-              
-            }
+            
+            
+            
+           
             //use message if Notification
-            category = $("#category").val()
+            category = mydevice.Category
             console.log("Before check category: "+category)
             if(category ==="Notification"){
               console.log(category)
@@ -543,7 +558,7 @@
             
             $.ajax({
                 type: 'POST',
-                url: 'http://127.0.0.1:8080/job/add',
+                url: serverURL+'job/add',
                 contentType: 'application/json',
                 data: JSON.stringify(data), // access in body
             }).done(function () {
@@ -559,44 +574,91 @@
             alert("Did not Submit")
           }
         });
-
+//edit button function
         $("#edit").click(function(){
           canSubmit = true
           data.Job.ID = parseInt(id)
           data.Job.Name = name
           data.Job.Description = description
           data.Job.Message = message
-          
+          data.Job.Device_ID = parseInt($("#jobDeviceID").val())
           if(name===""){
             canSubmit= false
             alert("Please type in a name for the device")
           }
-          if(type===""){
+          if(description===""){
             canSubmit= false
             alert("Please type in a device type")
           }
-          if(checkAtString() && checkDaysOfMonthString()){
+          console.log("Check at string and month", cronAtString, cronDayMonthString, canSubmit)
+          if(!checkAtString(cronAtString) || !checkDaysOfMonthString(cronDayMonthString)){
             canSubmit= false
-            
+            alert("check At string or Month string")
           }
+          cronEvery = $("#cronEvery").val()
+          verbalInstructionSet(cronEvery)
           if(canSubmit==true){
+            //checkAt and Months fields
+            console.log("Submitting cron every : "+cronEvery)
+            switch(cronEvery){
+              case "Days":
+                
+                VerbalInstr.At = $("#cronAt").val()
+                VerbalInstr.MonthsString =""
+                break;
+              case "Months":
+                VerbalInstr.MonthsString =$("#cronDaysMonth").val()
+                VerbalInstr.At =""
+                break;
+              
+              default:
+                break;
+            }
+            
+
+          if(isCheckCron){
+             
+            console.log("Edit job check cron", VerbalInstr)
+             data.Job.VerbalInstr = JSON.stringify(VerbalInstr)
+             data.Job.Minute = ""
+             data.Job.Hour = ""
+             data.Job.Day_Month =""
+             data.Job.Month = ""
+             data.Job.Day_Week =""
+            
+             
+           }else{
+            console.log("Edit job no check cron", VerbalInstr)
+             data.Job.VerbalInstr =""
+             data.Job.Minute = $("#cronExpMin").val()
+             data.Job.Hour = $("#cronExpHour").val()
+             data.Job.Day_Month =$("#cronExpDayMon").val()
+             data.Job.Month = $("#cronExpMon").val()
+             data.Job.Day_Week =$("#cronExpDayWeek").val()
+            
+             
+           }
+           
+
+          console.log(canSubmit)
+          
             alert("Can edit")
-            console.log(data.Job)
-             /*
-              alert("PUT button clicked: "+ data.Device.Pin1)
+            console.log("Editing: ",data.Job)
+            
+             
             $.ajax({
                 type: 'PUT',
-                url: 'http://127.0.0.1:8080/device/edit/{{device.ID}}',
+                url: serverURL+'job/edit/{{job.ID}}',
                 contentType: 'application/json',
                 data: JSON.stringify(data), // access in body
             }).done(function () {
                 console.log('SUCCESS');
-                window.location.href = "/terra-pi/sensors/";
+                window.location.href = "/terra-pi/jobs/";
             }).fail(function (msg) {
                 console.log('FAIL');
             }).always(function (msg) {
                 console.log('ALWAYS');
-            });*/
+            });
           } 
           else{
             alert("No edit")
@@ -606,22 +668,25 @@
         });
 
         $("#delete").click(function(){
-          if (data.Device.ID == 0 || data.Device.ID == ""){
+          data.Job.ID = parseInt(id)
+          if (data.Job.ID == 0 || data.Job.ID == ""){
             alert("Delete unavailable")
           }else{
+            let text = "Delete job?"
+            if(confirm(text)===true){
           $.ajax({
                 type: 'DELETE',
-                url: 'http://127.0.0.1:8080/job/delete/{{device.ID}}',
+                url: serverURL+'job/delete/{{job.ID}}',
                 contentType: 'application/json',
                 
             }).done(function () {
                 console.log('SUCCESS');
-                window.location.href = "/terra-pi/sensors/";
+                window.location.href = "/terra-pi/jobs/";
             }).fail(function (msg) {
                 console.log('FAIL');
             }).always(function (msg) {
                 console.log('ALWAYS');
-            });
+            });}
           }
         });
 
@@ -630,7 +695,7 @@
         function getDevices(category){
         $.ajax({
                 type: 'GET',
-                url: 'http://127.0.0.1:8080/device/view-all?category='+category,
+                url: serverURL+'device/view-all?category='+category,
                 success: function(res) {
                   devices = JSON.parse(res)
                   mydevices =  devices
@@ -768,14 +833,15 @@
       function updateCronVerbFields(cronEvery,value){
         
         $("#cronEveryValue").empty();
+        if (value!==0){
+            
+            $("#cronEveryValue").append(
+            $('<option></option>').attr("value",value).attr("id","everyValue+id").text(value)
+          );
+          }
+
         switch(cronEvery){
           case "Seconds":
-          if (value!==0){
-            
-                $("#cronEveryValue").append(
-                $('<option></option>').attr("value",value).attr("id","everyValue+id").text(value)
-              );
-              }
             for(let i =1; i<60;i++){
               
 
@@ -788,6 +854,7 @@
             break;
             
           case "Minutes":
+          
             for(let i =1; i<60;i++){
               $("#cronEveryValue").append(
                 $('<option></option>').attr("value",i).attr("id","everyValue+id").text(i)
@@ -942,7 +1009,7 @@
                 VerbalInstr.Days = cronEveryVal
                   break;
                 case "Months":
-                VerbalInstr.Montsh = cronEveryVal
+                VerbalInstr.Months = cronEveryVal
                   break;
              }
 

@@ -4,8 +4,8 @@
 
 <div class="container">
     <h2>Add Job </h2>
-    <a href="/terra-pi/job/new/simple"><button type="button" class="btn">Add Simple Job</button> </a>
-    <a href="/terra-pi/job/new/multi"><button type="button" class="btn">Add Multi Step Job</button> </a>
+    <a href="/terra-pi/job/new/simple"><button id="addsimple" type="button" class="btn">Add Simple Job</button> </a>
+    <a href="/terra-pi/job/new/multi"><button id ="addmulti" type="button" class="btn">Add Multi Step Job</button> </a>
       
   </div>
 <div class="container">
@@ -42,9 +42,11 @@
           <td>{{ job.Day_Month }}</td>
           <td>{{ job.Month }}</td>
           <td>{{ job.Day_Week }}</td>
-         
+         {% if job.Condition != "" %}
+         <td> <a href="/terra-pi/job/multi/{{job.ID}}/"> <button type="button" class="btn">Edit</button></a> </td>
+         {% else %}
           <td> <a href="/terra-pi/job/simple/{{job.ID}}/"> <button type="button" class="btn">Edit</button></a> </td>
-          
+        {%endif%}
         </tr>
         {% endfor %}
         

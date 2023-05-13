@@ -2,8 +2,44 @@
 
 {% block page_content %}
 
+{% if not dataEntry%}
+<div class="jumbotron">
+    <h1 class="display-4">No Data</h1>
+    <p class="lead">Please set up sensors, devices, and jobs.</p>
+    <hr class="my-4">
+    <p>Data will appear here after all necessary items are set up</p>
+    
+  </div>
+{% else %}  
+<br>
+<h3>Data Entries</h3>
+<br>
 
-
+{%endif%}
+<table class="table table-hover">
+    <thead>
+      <tr>
+        <th>Type</th>
+        
+        <th>Value</th>
+        <th>Unit</th>
+        <th>Time Stamp</th>
+      </tr>
+    </thead>
+    <tbody>
+      
+      {% for entry in dataEntry %}
+      <tr>
+        <td>{{ entry.Type}}</td>
+        
+        <td>{{entry.Value }}</td>
+        <td>{{ entry.Unit }}</td>
+        <td>{{ entry.TimeStamp }}</td>
+        
+      </tr>
+      {% endfor %}  
+    </tbody>
+  </table>
 
 
 {% endblock %}
