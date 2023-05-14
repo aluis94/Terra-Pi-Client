@@ -430,7 +430,10 @@
         var cronEveryVal=0
         var cronAtString =""
         var cronDayMonthString=""
-        var message 
+        var message =  $("#message").val()
+        if(message!==""){
+          data.Job.Message = message
+        }
 
         var selectedVal = "";
         var selected = $("input[type='radio']:checked");

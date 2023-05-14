@@ -267,6 +267,11 @@
         var cronDayMonthString=""
         var message = $("#message").val()
 
+        if(message!==""){
+          data.Job.Message = message
+        }
+
+
         
         
         //get cron expr values
@@ -994,7 +999,7 @@
 
     function verbalInstructionSet(cronEvery){
       console.log("editing verbal instr setting 'every' field: ", cronEvery)
-      cronEveryVal = $("#cronEveryValue").val()
+      cronEveryVal = parseInt($("#cronEveryValue").val())
       switch(cronEvery){
               case "Seconds":
                 VerbalInstr.Seconds = cronEveryVal

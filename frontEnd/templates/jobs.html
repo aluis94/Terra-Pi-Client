@@ -36,7 +36,9 @@
           <td>{{ job.Name  }} test</td>
           <td>{{ job.Description }}</td>
           <td>{{ job.ScriptName }}</td>
-          <td style="word-wrap: break-word;min-width: 160px;max-width: 160px;" >{{ job.VerbalInstr }}</td>
+          {% if job.VerbalInstr %}
+          <td  style="word-wrap: break-word;min-width: 160px;max-width: 160px;" >Verbal Instruction</td>
+          {% endif %}
           <td>{{ job.Minute }}</td>
           <td>{{ job.Hour }}</td>
           <td>{{ job.Day_Month }}</td>
@@ -52,9 +54,12 @@
         
       </tbody>
     </table>
+    <input type="hidden" id="jobs" name="jobs" value="{{jobs}}">
     {% else %}
     <h3>No Jobs Configured</h3>
     {%endif%}
   </div>
+
+  
 
 {% endblock %}
